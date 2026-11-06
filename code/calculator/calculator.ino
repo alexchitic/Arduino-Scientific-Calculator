@@ -1,9 +1,45 @@
+/*
+ * ============================================================
+ * Project: Arduino-Based Programmable Scientific Calculator
+ * Author: Chitic Alexandru-Daniel
+ *
+ * Description:
+ * A programmable scientific calculator based on the
+ * Arduino Uno (ATmega328P), featuring a 16x2 LCD display,
+ * a 5x4 matrix keypad and mathematical expression evaluation.
+ *
+ * Project start: 05.09.2026
+ * Last modified: 06.11.2026
+ *
+ * THIRD-PARTY LIBRARIES:
+ *
+ * 1. MathParser
+ *    Author: Meer Zafarullah Noohani
+ *    Purpose: Mathematical expression parsing and evaluation.
+ *    GitHub: https://github.com/meerzafarnoohani/MathParser
+ *
+ * 2. LiquidCrystal
+ *    Authors: Arduino, Adafruit
+ *    Purpose: Controlling HD44780-compatible LCD displays.
+ *    GitHub: https://github.com/arduino-libraries/LiquidCrystal
+ *
+ * 3. Keypad
+ *    Authors: Mark Stanley, Alexander Brevig
+ *    Purpose: Reading inputs from matrix keypads.
+ *    GitHub: https://github.com/Chris--A/Keypad
+ *
+ * ============================================================
+ */
+
+#include <MathParser_Arduino.h>
 #include <LiquidCrystal.h>
 #include <Keypad.h>
+
 
 //calculator variables
 char typed_formula[65] = {};
 int typed_formula_index = 0;
+double result;
 
 
 //LCD Pins
@@ -32,7 +68,10 @@ char hexaKeys[ROWS][COLS] = {
 //matrix keypad pins
 byte rowPins[ROWS] = {4, 5, 6, 7, 8};
 byte colPins[COLS] = {0, 1, 2, 3};
-Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
+Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
+
+//create the parser object
+MathParser parser;  
 
 void setup() {
   //pins configuration for the slide switch
@@ -70,6 +109,11 @@ void loop() {
         typed_formula[typed_formula_index] = '\0';
 
         //TODO: IMPLEMENT THE MATH ALGORITHM AND DISPLAY STUFF
+        //formula parser and show the result
+        parser.compile(typed_formula);
+        result = parser.eval();
+        lcd.setCursor(0, 1);
+        lcd.print(result);
             
       break;
       //put the characters in the array and the screen
